@@ -18,7 +18,7 @@ import retrofit2.Call
 @RunWith(JUnit4::class)
 class TestNearbySearch{
 
-    val placeWrapper:PlacesWrapper = PlacesWrapper(apiKey = "AIzaSyCrMUpjPZLtpUsTkhBTMZLDKpKmsEAhaag")
+    val placeWrapper:PlacesWrapper = PlacesWrapper(apiKey = "")
 
     @Test
     fun testSync(){
