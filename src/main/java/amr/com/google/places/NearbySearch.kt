@@ -30,7 +30,12 @@ class NearbySearch(val apiKey: String, val coordinates: Coordinates, val radius:
     override fun onResponse(call: Call<ResponseBody>?, response: Response<ResponseBody>?) {
         if(response != null ) {
             if (response.isSuccessful && response.body() != null) {
-                this.mListener?.onResultsReady(createPlaceList(response.body()!!.string()))
+                val jsonResponse = JsonParser().parse(response.body()!!.string()).asJsonObject;
+                if(jsonResponse.has("error_message")){
+                    this.mListener?.onError(Throwable(jsonResponse.get("error_message").asString))
+                }else {
+                    this.mListener?.onResultsReady(createPlaceList(jsonResponse.toString()))
+                }
             } else{
                 this.mListener?.onError(Throwable(response.errorBody().toString()))
             }
