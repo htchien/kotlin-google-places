@@ -105,23 +105,23 @@ class NearbySearch(val apiKey: String, val coordinates: Coordinates, val radius:
 
         val resultObject = json?.asJsonObject
         if(resultObject!!.has("results")) {
-            for(element: JsonElement in resultObject!!.getAsJsonArray("results")) {
-                val jsonObject = element.asJsonObject
-                val place: Place = Place(
-                        name = if (jsonObject!!.has("name")) jsonObject.get("name")!!.asString else "",
-                        location = Coordinates(
-                                latitude = if (jsonObject.has("location")) jsonObject.get("location")!!.asJsonObject.get("lat").asDouble else 0.0,
-                                longitude = if (jsonObject.has("location")) jsonObject.get("location")!!.asJsonObject.get("lng").asDouble else 0.0
-                        ),
-                        iconLink = if (jsonObject.has("icon")) jsonObject.get("icon")!!.asString else "",
-                        id = if (jsonObject.has("id")) jsonObject.get("id")!!.asString else "",
-                        placeId = if (jsonObject.has("place_id")) jsonObject.get("place_id")!!.asString else "",
-                        rating = if (jsonObject.has("rating")) jsonObject.get("rating")!!.asInt else 0,
-                        vicinity = if (jsonObject.has("vicinity")) jsonObject.get("vicinity")!!.asString else "",
-                        type = getTypes(if (jsonObject.has("types")) jsonObject.get("types")!!.asJsonArray else JsonArray())
-                )
-                places.add(place)
-            }
+            resultObject.getAsJsonArray("results")
+                    .map { it.asJsonObject }
+                    .mapTo(places) {
+                        Place(
+                                name = if (it!!.has("name")) it.get("name")!!.asString else "",
+                                location = Coordinates(
+                                        latitude = if (it.get("geometry").asJsonObject.has("location")) it.get("geometry").asJsonObject.get("location")!!.asJsonObject.get("lat").asDouble else 0.0,
+                                        longitude = if (it.get("geometry").asJsonObject.has("location")) it.get("geometry").asJsonObject.get("location")!!.asJsonObject.get("lng").asDouble else 0.0
+                                ),
+                                iconLink = if (it.has("icon")) it.get("icon")!!.asString else "",
+                                id = if (it.has("id")) it.get("id")!!.asString else "",
+                                placeId = if (it.has("place_id")) it.get("place_id")!!.asString else "",
+                                rating = if (it.has("rating")) it.get("rating")!!.asInt else 0,
+                                vicinity = if (it.has("vicinity")) it.get("vicinity")!!.asString else "",
+                                type = getTypes(if (it.has("types")) it.get("types")!!.asJsonArray else JsonArray())
+                        )
+                    }
         }
         return places
     }
